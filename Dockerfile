@@ -1,4 +1,4 @@
-# Multi-stage Dockerfile for Railway deployment with Supabase
+# Backend-only Dockerfile for Railway deployment
 FROM python:3.11-slim as base
 
 # Install system dependencies
@@ -14,20 +14,13 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 # Set working directory
 WORKDIR /app
 
-# Copy the entire project
-COPY . .
+# Copy backend files
+COPY backend/ ./backend/
+COPY start.py ./
 
 # Install Python dependencies for backend
 WORKDIR /app/backend
 RUN uv sync
-
-# Install Node.js dependencies for frontend
-WORKDIR /app/frontend
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
-    && apt-get install -y nodejs
-
-RUN npm ci
-RUN npm run build
 
 # Set final working directory
 WORKDIR /app
