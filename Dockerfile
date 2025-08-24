@@ -32,5 +32,6 @@ EXPOSE $PORT
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:$PORT/health || exit 1
 
-# Default command (will be overridden by Railway)
-CMD ["python", "start.py"]
+# Railway deployment - start backend directly
+WORKDIR /app/backend
+CMD ["uv", "run", "gunicorn", "api:app", "--workers", "2", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:$PORT", "--timeout", "1800"]
